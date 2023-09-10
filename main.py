@@ -1,15 +1,15 @@
 import pygame
-import src.player as player
 
-screen_with = 800
-screen_height = 800
-x_change = 0
+import src.player as player
+import src.enemy as enemy
+
+from src.config import config
 
 # initialize game
 pygame.init()
 
 pygame.display.set_caption("Space Invasion")
-screen = pygame.display.set_mode((800, 600))
+screen = pygame.display.set_mode((config.screen_with, config.screen_height))
 
 running = True
 while running:
@@ -20,10 +20,14 @@ while running:
          running = False
 
       if event.type == pygame.KEYDOWN or event.type == pygame.KEYUP:
-         x_change = player.move(event)
+         player.x_change = player.move(event)
 
    #Change player location
-   player.x += x_change
+   player.x += player.x_change
    player.handler(screen, player.x)
+
+   #Enemies
+   enemy.x += enemy.x_change
+   enemy.handler(screen, enemy.x)
 
    pygame.display.update()
