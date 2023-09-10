@@ -1,27 +1,31 @@
 import pygame
 import src.utils as utils
 
-from src.config import config
 from pathlib import Path
 
+#Player varaibles
+player_img = pygame.image.load(Path('assets/foguete.png'))
+x_axis = utils.center_position(player_img)
+y_axis = 500
+x_axis_change = 0
 
-img_player = pygame.image.load(Path('assets/foguete.png'))
-
-x = (config.screen_with / 2) - (img_player.get_width() / 2)
-y = 500
-x_change = 0
+#Bullet Variables
+bullet_img = pygame.image.load(Path('assets/bullet.png'))
+bullet_y_axis = 500
+bullet_y_axis_change = 0.3
+visible_bullet = False
 
 #handler player
-def handler(screen: pygame.Surface, x: float):
-   maxPlayerMoveScreenX = utils.max_value_to_move_x(img_player)
+def handler(screen: pygame.Surface, x_axis: float):
+   x_axis_value = utils.max_value_x_axis_move(player_img)
 
    #keep inside screen
-   if x <= 0 : x = 0
-   if x >=  maxPlayerMoveScreenX: x = maxPlayerMoveScreenX
+   if x_axis <= 0 : x_axis = 0
+   if x_axis >=  x_axis_value: x_axis = x_axis_value
 
-   screen.blit(img_player, (x, y))
+   screen.blit(player_img, (x_axis, y_axis))
 
-#handler player moviment
+#Handler player moviment
 def move(event: pygame.event.Event) -> float:
    x_change = 0
    is_page_down = event.type == pygame.KEYDOWN
@@ -34,3 +38,16 @@ def move(event: pygame.event.Event) -> float:
       x_change = 0.3
 
    return x_change
+
+#Shoot Bullet
+def shoot(screen: pygame.Surface, x, y):
+   global visible_bullet
+   visible_bullet = True
+   screen.blit(bullet_img, (x + 16, y + 10))
+
+# #Shoot Bullet Moviment
+# def shoot_moviment(screen: pygame.Surface, x, y):
+#    global bullet_visible
+#    bullet_visible = True
+   
+#    screen.blit(bullet_img, (x, y))

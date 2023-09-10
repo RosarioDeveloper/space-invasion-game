@@ -3,27 +3,26 @@ import random
 import src.utils as utils
 
 from pathlib import Path
-from src.config import config
 
 # Variables
 enemy_img = pygame.image.load(Path('assets/enemy.png'))
-x = random.randint(0, 736)
-y = random.randint(0, 200)
-x_change = 0.3
-y_change = 50
+x_axis = random.randint(0, 736)
+y_axis = random.randint(0, 200)
+x_axis_change = 0.3
+y_axis_change = 50
 
 
-#handler player
-def handler(screen: pygame.Surface, x: float):
-   global x_change, y
-   max_value_to_move =  utils.max_value_to_move_x(enemy_img)
+#handler enemy
+def handler(screen: pygame.Surface, x_axis: float):
+   global x_axis_change, y_axis
+   x_axis_value =  utils.max_value_x_axis_move(enemy_img)
 
    #keep inside screen
-   if x <= 0 : 
-      x_change = 0.3
-      y += y_change
-   elif x >= max_value_to_move : 
-      x_change = -0.3
-      y += y_change
+   if x_axis <= 0 : 
+      x_axis_change = 0.3
+      y_axis += y_axis_change
+   elif x_axis >= x_axis_value : 
+      x_axis_change = -0.3
+      y_axis += y_axis_change
 
-   screen.blit(enemy_img, (x, y))
+   screen.blit(enemy_img, (x_axis, y_axis))
