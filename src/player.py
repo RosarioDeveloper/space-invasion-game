@@ -1,19 +1,23 @@
 import pygame
+import src.utils as utils
+
+from src.config import config
 from pathlib import Path
+
 
 img_player = pygame.image.load(Path('assets/foguete.png'))
 
-
-x = (800 / 2) - (img_player.get_width() / 2)
-y = 536
+x = (config.screen_with / 2) - (img_player.get_width() / 2)
+y = 500
+x_change = 0
 
 #handler player
 def handler(screen: pygame.Surface, x: float):
-   maxPlayerMoveScreen = (800 - img_player.get_width())
+   maxPlayerMoveScreenX = utils.max_value_to_move_x(img_player)
 
    #keep inside screen
    if x <= 0 : x = 0
-   if x >= maxPlayerMoveScreen : x = maxPlayerMoveScreen
+   if x >=  maxPlayerMoveScreenX: x = maxPlayerMoveScreenX
 
    screen.blit(img_player, (x, y))
 
