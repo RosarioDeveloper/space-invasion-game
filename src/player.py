@@ -1,6 +1,7 @@
 import pygame
 import src.utils as utils
 
+
 from pathlib import Path
 
 #Player varaibles
@@ -11,13 +12,14 @@ x_axis_change = 0
 
 #Bullet Variables
 bullet_img = pygame.image.load(Path('assets/bullet.png'))
+bullet_x_axis = 0
 bullet_y_axis = 500
-bullet_y_axis_change = 0.3
+bullet_y_axis_change = 3
 visible_bullet = False
 
 #handler player
 def handler(screen: pygame.Surface, x_axis: float):
-   x_axis_value = utils.max_value_x_axis_move(player_img)
+   x_axis_value = utils.max_value_move_x(player_img)
 
    #keep inside screen
    if x_axis <= 0 : x_axis = 0
@@ -27,17 +29,22 @@ def handler(screen: pygame.Surface, x_axis: float):
 
 #Handler player moviment
 def move(event: pygame.event.Event) -> float:
-   x_change = 0
-   is_page_down = event.type == pygame.KEYDOWN
+   x_axis_change = 0
+   key_down = event.type == pygame.KEYDOWN
+   key_up = event.type == pygame.KEYUP
 
    # #Move plyer to left or Right
-   if (is_page_down and event.key == pygame.K_LEFT):
-      x_change = (- 0.3)
+   if (key_down and event.key == pygame.K_LEFT):
+      x_axis_change = (- 0.3)
 
-   if (is_page_down and event.key == pygame.K_RIGHT):
-      x_change = 0.3
+   if (key_down and event.key == pygame.K_RIGHT):
+      x_axis_change = 0.3
 
-   return x_change
+   if (key_up and event.key == pygame.K_LEFT or key_up and event.key == pygame.K_LEFT):
+      x_axis_change = 0
+
+   return x_axis_change
+
 
 #Shoot Bullet
 def shoot(screen: pygame.Surface, x, y):

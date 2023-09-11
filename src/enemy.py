@@ -6,23 +6,32 @@ from pathlib import Path
 
 # Variables
 enemy_img = pygame.image.load(Path('assets/enemy.png'))
-x_axis = random.randint(0, 736)
-y_axis = random.randint(0, 200)
-x_axis_change = 0.3
-y_axis_change = 50
+max_value_move_x = utils.max_value_move_x(enemy_img)
+numer_0f_enemies = 8
+
+x_axis = []
+y_axis = []
+x_axis_change = []
+y_axis_change = []
+
+#Initialize variables
+for i in range(numer_0f_enemies):
+   x_axis.append(random.randint(0, int(max_value_move_x)))
+   y_axis.append(random.randint(0, 200))
+   x_axis_change.append(0.3)
+   y_axis_change.append(50)
 
 
 #handler enemy
-def handler(screen: pygame.Surface, x_axis: float):
+def handler(screen: pygame.Surface, x: float, i: int):
    global x_axis_change, y_axis
-   x_axis_value =  utils.max_value_x_axis_move(enemy_img)
 
    #keep inside screen
-   if x_axis <= 0 : 
-      x_axis_change = 0.3
-      y_axis += y_axis_change
-   elif x_axis >= x_axis_value : 
-      x_axis_change = -0.3
-      y_axis += y_axis_change
+   if x <= 0 : 
+      x_axis_change[i] = 0.3
+      y_axis[i] += y_axis_change[i]
+   elif x >= max_value_move_x : 
+      x_axis_change[i] = -0.3
+      y_axis[i] += y_axis_change[i]
 
-   screen.blit(enemy_img, (x_axis, y_axis))
+   screen.blit(enemy_img, (x, y_axis[i]))
