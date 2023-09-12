@@ -1,12 +1,11 @@
 import pygame
 import src.utils as utils
 
-
 from pathlib import Path
 
 #Player varaibles
 player_img = pygame.image.load(Path('assets/foguete.png'))
-x_axis = utils.center_position(player_img)
+x_axis = utils.align_center(player_img)
 y_axis = 500
 x_axis_change = 0
 

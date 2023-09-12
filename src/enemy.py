@@ -18,7 +18,7 @@ y_axis_change = []
 for i in range(numer_0f_enemies):
    x_axis.append(random.randint(0, int(max_value_move_x)))
    y_axis.append(random.randint(0, 200))
-   x_axis_change.append(0.3)
+   x_axis_change.append(1)
    y_axis_change.append(50)
 
 
