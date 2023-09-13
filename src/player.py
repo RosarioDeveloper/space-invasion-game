@@ -4,6 +4,7 @@ import src.utils as utils
 from pathlib import Path
 
 #Player varaibles
+__speed = utils.speed_moviment
 player_img = pygame.image.load(Path('assets/foguete.png'))
 x_axis = utils.align_center(player_img)
 y_axis = 500
@@ -34,10 +35,10 @@ def move(event: pygame.event.Event) -> float:
 
    # #Move plyer to left or Right
    if (key_down and event.key == pygame.K_LEFT):
-      x_axis_change = (- 0.3)
+      x_axis_change = -__speed
 
    if (key_down and event.key == pygame.K_RIGHT):
-      x_axis_change = 0.3
+      x_axis_change = __speed
 
    if (key_up and event.key == pygame.K_LEFT or key_up and event.key == pygame.K_LEFT):
       x_axis_change = 0
