@@ -1,162 +1,190 @@
+from typing import Any
 import pygame
-import math
 import random
-import src.player as player
-import src.enemy as enemy
-
-import src.utils as utils
-
-
-#Constants
-WHITE = (255, 255, 255)
-BLACK = (0,0,0)
 
 # initialize game
 pygame.init()
+pygame.mixer.init()
+
+#Defines Colors
+WHITE = (255, 255, 255)
+LIGHT = (192, 192, 192)
+RED = (255, 171, 186)
+GREEN = (153, 255, 201)
+BLACK = (0,0,0)
+
+#Define fps
+clock = pygame.time.Clock()
+fps = 60
+
+screen_with = 800
+screen_height = 600
+screen_center = screen_with / 2
+
 pygame.display.set_caption("Space Invasion")
-screen = pygame.display.set_mode((utils.screen_with, utils.screen_height))
-background = pygame.image.load("./assets/background.jpg")
+screen = pygame.display.set_mode((screen_with, screen_height))
+background = pygame.image.load("./assets/images/background.png")
 
-# Add Music
-pygame.mixer.music.load("./assets/audio/background_music.mp3")
-pygame.mixer.music.set_volume(0.5)
-pygame.mixer.music.play(-1)
+#Define fonts
+font_type = "./assets/fonts/Press_Start_2P/PressStart2P-Regular.ttf"
+font10 = pygame.font.Font(font_type,10)
 
-#Variables
-restart_button = utils.get_font(20).render("Start game", True, WHITE)
-restart_button_align = restart_button.get_rect()
-restart_button_align.center = (utils.screen_with // 2, 500)
+# Define Sound
+shot_sound = pygame.mixer.Sound("./assets/sounds/shot.mp3")
+shot_sound.set_volume(0.5)
 
-score = 0
-score_font = utils.get_font(30)
+explosion_sound = pygame.mixer.Sound("./assets/sounds/explosion2.wav")
+explosion_sound.set_volume(0.5)
 
-#Score
-def handler_score():
-   text = score_font.render(f'Score: {score}', True, WHITE)
-   screen.blit(text, (10, 10))
-
-#Detect Collosion
-def there_is_collision(x1: float, y1: float, x2: float, y2: float) -> bool:
-   distance = math.sqrt(math.pow((x1 - x2), 2) + math.pow((y2 -y1), 2))
-   return True if distance < 27 else False
+#Game Variables
+enemy_rows = 3
+enemy_cols = 7
+scores = 0
 
 
-#End of the game
-is_game_over = False
-game_over_font = pygame.font.Font("freesansbold.ttf", 40)
-def game_over():
-   text = game_over_font.render("GAME OVER", True, WHITE)
-   pygame.mixer.music.stop()
-
-   screen.blit(text, (utils.align_center(text), 250))
-   screen.blit(restart_button, restart_button_align)
-
-   
-#Close Event
-def close_game(event: pygame.event.Event):
-   global running
-   if event.type == pygame.QUIT:  running = False
-
-#Restart game
-def restart_game(event: pygame.event.Event):
-   global is_game_over
-
-   if event.type == pygame.MOUSEBUTTONDOWN:
-      if restart_button_align.collidepoint(event.pos):
-         is_game_over = False
-
-         pygame.mixer.music.load("./assets/audio/background_music.mp3")
-         pygame.mixer.music.set_volume(0.5)
-         pygame.mixer.music.play(-1)
-
-         #Restat enemies position
-         for k in range(enemy.numer_0f_enemies):
-            enemy.y_axis[k] = random.randint(0, 200)
+def draw_text(text, color, font: pygame.font.Font, x , y):
+   text_font = font.render(text, True, color)
+   screen.blit(text_font, (x, y))
 
 
-#Start Game
-def start_game():
-   global is_game_over, score, running
+# Create Player Class
+class Player(pygame.sprite.Sprite):
+   def __init__(self, x, y) :
+      pygame.sprite.Sprite.__init__(self)
+      self.image = pygame.image.load('./assets/images/player.png')
+      self.rect = self.image.get_rect()
+      self.rect.center = (x, y)
+      self.time_shot = pygame.time.get_ticks()
 
-   for event in pygame.event.get():
-      #Closing Event
-      close_game(event)
-
-      # Process key event   
-      if event.type == pygame.KEYDOWN or event.type == pygame.KEYUP:
-         player.x_axis_change = player.move(event)
-
-      if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
-         if not (player.visible_bullet):
-            bullet_sound = pygame.mixer.Sound("./assets/audio/shot.mp3")
-            bullet_sound.play()
-
-            player.bullet_x_axis = player.x_axis
-            player.shoot(screen, player.bullet_x_axis, player.bullet_y_axis)
-            
-   #Change player location
-   player.x_axis += player.x_axis_change
-
-   #Bullet Moviment
-   if(player.bullet_y_axis <= -64):
-      player.bullet_y_axis = 500
-      player.visible_bullet = False
-
-   if player.visible_bullet:
-      player.shoot(screen, player.bullet_x_axis, player.bullet_y_axis)
-      player.bullet_y_axis -= player.bullet_y_axis_change
-
-   #Change enemy location
-   for en in range(enemy.numer_0f_enemies):
-      #End of game
-      is_game_over = enemy.y_axis[en] > 400
-
-      if(is_game_over): 
-         for k in range(enemy.numer_0f_enemies):
-            enemy.y_axis[k] = 1000
-         break
-         
-      enemy.x_axis[en] += enemy.x_axis_change[en]
+   def update(self):
+      speed = 8
       
-      #Collision
-      collesion = there_is_collision(
-         enemy.x_axis[en], enemy.y_axis[en], player.bullet_x_axis, player.bullet_y_axis
-      )
+      #Key Press
+      key = pygame.key.get_pressed()
+      if key[pygame.K_LEFT] and self.rect.left > 0:
+         self.rect.x -= speed
+      if key[pygame.K_RIGHT] and self.rect.right < screen_with:
+         self.rect.x += speed
 
-      if(collesion):
-         collision_sound = pygame.mixer.Sound("./assets/audio/punch.mp3")
-         collision_sound.play()
+      #Shot Bullet
+      if(key[pygame.K_SPACE]):
+         self.shot()
 
-         #Restart bullet position
-         player.bullet_y_axis = 500
-         player.visible_bullet = False
+      #Drow health bar
+      # pygame.draw.rect(
+      #    screen, 
+      #    RED, 
+      #    (self.rect.x, (self.rect.bottom), self.rect.width, 5)
+      # )
 
-         #Count Scores
-         score += 1
+   def shot(self):
+      current_time = pygame.time.get_ticks()
+      interval = 500 #millseconds
 
-         #Restart enemy position
-         enemy.x_axis[en] = random.randint(0, int(enemy.max_value_move_x))
-         enemy.y_axis[en] = random.randint(0, 200)
-
-      enemy.handler(screen, enemy.x_axis[en], en)
-
-   player.handler(screen, player.x_axis)
-   handler_score()
+      if current_time - self.time_shot > interval:
+         shot_sound.play()
+         bullet_group.add(Bullet(self.rect.centerx + 4.5, self.rect.y))
+         self.time_shot = current_time
 
 
+
+#Create Bullet Class
+class Bullet(pygame.sprite.Sprite):
+   def __init__(self, x, y) :
+      pygame.sprite.Sprite.__init__(self)
+      self.image = pygame.image.load('./assets/images/bullet2.png')
+      self.rect = self.image.get_rect()
+      self.rect.center = (x, y)
+
+   def update(self):
+      global scores
+      self.rect.y -= 5
+
+      if self.rect.bottom < 0:
+         self.kill()
+
+      #Detect Enemy collision
+      if pygame.sprite.spritecollide(self, enemy_group, True):
+         self.kill()
+         scores += 1
+         explosion_sound.play()
+
+
+# Enemy Class
+class Enemy(pygame.sprite.Sprite):
+   def __init__(self, x, y) :
+      pygame.sprite.Sprite.__init__(self)
+      self.image = pygame.image.load(f'./assets/images/enemy_{str(random.randint(1,2))}.png')
+      self.rect = self.image.get_rect()
+      self.rect.center = (x, y)
+      self.time_shot = pygame.time.get_ticks()
+      self.move_x_count = 1
+      self.move_x = 1
+
+   def update(self):
+      self.rect.x += self.move_x
+      self.move_x_count += 1
+      
+      # Calculate Left and Right movement
+      if abs(self.move_x_count) > 75:
+         self.move_x *= -1
+         self.move_x_count *= self.move_x
+         self.rect.y += 10
+
+      #Stop Process
+      if(self.rect.y > screen_height):
+         self.kill()
+            
+      
+
+
+
+
+# Define Sprites Groups
+player_group = pygame.sprite.Group()
+bullet_group = pygame.sprite.Group()
+enemy_group = pygame.sprite.Group()
+
+# Create player
+player_group.add(Player(screen_center, screen_height - 50))
+
+
+#Functions
+def create_enemies():
+   for row in range(enemy_rows):
+      for col in range(enemy_cols):
+         enemy_group.add(Enemy(100 + col * 100, 100 + row * 70))
+
+
+create_enemies()
 
 #Run Game
 running = True
 while running:
-   #Background
-   screen.blit(background, (0,0))
-   
-   if(is_game_over):
-      for event in pygame.event.get(): restart_game(event)
-      game_over()
-   else:
-      start_game()
+   clock.tick(fps)
 
-   pygame.display.flip()
+   #Draw Background
+   screen.blit(background, (0,0))
+
+   for event in pygame.event.get():
+      if(event.type == pygame.QUIT):
+         running = False
+
+   #Draw Scores
+   draw_text(f'Score: {scores}', LIGHT, font10, screen_center - 30, 10)
+
+   #Handler Enemy
+   enemy_group.draw(screen)
+   enemy_group.update()
+
+   #Handler Bullet
+   bullet_group.draw(screen)
+   bullet_group.update()
+
+   #Handler Player
+   player_group.update()
+   player_group.draw(screen)
+
+   pygame.display.update()
 
 pygame.quit()
