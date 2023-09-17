@@ -1,14 +1,14 @@
 <h4 align="center">Space Invasion Game - Built with  <a href="https://www.python.org/" target="_blank">Python</a>.</h4>
 
-<p align="center">
+<!-- <p align="center">
   <a href="#how-to-use">How To Use</a> •
   <a href="#download">Download</a> •
   <a href="#credits">Credits</a> •
   <a href="#related">Related</a> •
   <a href="#license">License</a>
-</p>
+</p> -->
 
-![screenshot](https://raw.githubusercontent.com/amitmerchant1990/electron-markdownify/master/app/img/markdownify.gif)
+<img src="./screenshot/playinggif.gif" width="100%">
 
 ## How To Use
 
