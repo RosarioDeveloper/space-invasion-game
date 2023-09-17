@@ -42,7 +42,7 @@ explosion_sound2 = pygame.mixer.Sound("./assets/sounds/explosion2.wav")
 explosion_sound2.set_volume(0.5)
 
 #Game Variables
-enemy_rows = 3
+enemy_rows = 2
 enemy_cols = 7
 total_enemies = enemy_cols * enemy_rows
 scores = 0
@@ -211,7 +211,7 @@ class Explosion(pygame.sprite.Sprite):
    
    def update(self):
       self.counter += 1
-      speed = 2
+      speed = 1
 
 
       if self.counter >= speed and self.index < 5:
