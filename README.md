@@ -7,8 +7,9 @@
   <a href="#related">Related</a> •
   <a href="#license">License</a>
 </p> -->
+ <!-- ![playing3](https://github.com/RosarioDeveloper/space-invasion-game/assets/35292468/90ebab49-d758-46e5-b1a0-1876e25e0233)-->
 
-<img src="./screenshot/playinggif.gif" width="100%">
+<img src="https://github.com/RosarioDeveloper/space-invasion-game/assets/35292468/90ebab49-d758-46e5-b1a0-1876e25e0233" width="100%">
 
 ## How To Use
 
